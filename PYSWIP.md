@@ -2,16 +2,17 @@
 
 We assume you're using Linux.
 
+
 ### FIX
 
-SWI-Prolog 8 doesn't work with pyswip unless you symlink it to the new name:
+```python3 -m venv pyswip_env
+source pyswip_env/bin/activate
+pip install pyswip
+pip install jupyter
+python3 -m ipykernel install --name pyswip_env --user
+python3 python/string_eval.wrapper.py```
 
-`sudo ln -s /usr/lib/swi-prolog/lib/x86_64-linux/libswipl.so /usr/lib/libpl.so`
+```from swipl import Prolog```
 
-It also only works in Python 2.7
 
-`conda create -n prolexa python=2.7 ipykernel`
-`python2 -m ipykernel install --user --name=prolexa`
-`conda install -c auto pyswip`
 
-Pyswip seems to be unstable; segfault as soon as you run any query

@@ -1,4 +1,5 @@
 # MacOS files
 *.DS_Store
 
+pyswip_env
 notebooks/.ipynb_checkpoints/
