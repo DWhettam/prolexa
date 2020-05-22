@@ -1,4 +1,4 @@
-Humans are mortal.
+All humans are mortal.
 Peter is a human.
 Most birds fly.
 Penguins are birds.
