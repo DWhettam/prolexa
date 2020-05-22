@@ -3,3 +3,4 @@
 
 pyswip_env
 notebooks/.ipynb_checkpoints/
+python/__pycache__/
