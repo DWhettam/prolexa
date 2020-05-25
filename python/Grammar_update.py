@@ -189,6 +189,32 @@ def update_rules(text):
                     new_line = 'pred(' + input_word + ', 1,[v/' + input_word + ']).\n'
                 lines.insert(noun_idx, new_line)
 
+        if ('NNP' in tags) and re.match(r"proper_noun\(s(.*) -->(.*)\]\.", line):
+            start = '--> ['
+            end = ']'
+            exists = False
+            input_word = text[tags.index('NNP')]
+            for det_idx, det_line in enumerate(lines[idx:]):
+                if not(re.match(r"proper_noun\(s(.*) -->(.*)\]\.", det_line)):
+                    det_idx = det_idx + idx
+                    if tags:
+                        tags.remove('NNP')
+                    if text:
+                        text.remove(input_word)
+                    break
+                line_word = (det_line.split(start))[1].split(end)[0]
+                if input_word == line_word:
+                    exists = True
+                    if tags:
+                        tags.remove('NNP')
+                    if text:
+                        text.remove(input_word)
+                    break
+
+            if not exists:
+                new_line = "proper_noun(s,{}) --> [{}].".format(input_word, input_word)
+                lines.insert(det_idx, new_line)
+
     f = open(PROLEXA_PATH + "prolexa_grammar.pl", "w")
     lines = "".join(lines)
     f.write(lines)
