@@ -212,7 +212,7 @@ def update_rules(text):
                     break
 
             if not exists:
-                new_line = "proper_noun(s,{}) --> [{}].".format(input_word, input_word)
+                new_line = "proper_noun(s,{}) --> [{}].\n".format(input_word, input_word)
                 lines.insert(det_idx, new_line)
 
     f = open(PROLEXA_PATH + "prolexa_grammar.pl", "w")
