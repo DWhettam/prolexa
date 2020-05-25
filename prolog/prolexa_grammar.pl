@@ -73,7 +73,7 @@ determiner(s,X=>B,X=>H,[(H:-B)]) --> [the].
 
 proper_noun(s,tweety) --> [tweety].
 proper_noun(s,peter) --> [peter].
-proper_noun(s,dan) --> [dan].%%% questions %%%
+%%% questions %%%
 
 question(Q) --> qword,question1(Q).
 
