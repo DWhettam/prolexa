@@ -61,10 +61,10 @@ def handle_utterance_str(text) :
 def standardised_query(pl, text) :
     text = contractions.fix(text)
     text = lemmatise(text)
-    _, _, tags = tagger.tag(text)
-    tags = standardise_tags(tags)
-    #return escape_and_call_prolexa(pl, text)
-    return tags, text
+    #_, _, tags = tagger.tag(text)
+    #tags = standardise_tags(tags)
+
+    return escape_and_call_prolexa(pl, text)
 
 
 # for queries, not knowledge loading
@@ -370,5 +370,3 @@ def update_rules(tagger, text):
             lines = handle_proper_noun(lines, idx, text, tags)
     
     write_new_grammar(PROLEXA_PATH, lines)
-
-    
