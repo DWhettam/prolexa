@@ -167,8 +167,8 @@ def handle_noun(lines, i, text, tags) :
     exists = False
     new_line = ''
     input_word = text[tags.index(nn)]
-    #plural, lemma = is_plural(input_word)
-    #input_word = lemma if plural else input_word
+    _, input_word = is_plural(input_word)
+    text[tags.index(nn)] = input_word
     
     for noun_idx, noun_line in enumerate(lines[i:]):
         if not(re.match(r"pred\((.*)[1],\[(.*)\]\)\.", noun_line)):
@@ -201,8 +201,6 @@ def handle_noun(lines, i, text, tags) :
                 break
 
     if not exists:
-        plural, lemma = is_plural(input_word)
-        input_word = lemma if plural else input_word
         if new_line == '':
             new_line = 'pred(' + input_word + ', 1,[n/' + input_word + ']).\n'
         lines.insert(noun_idx, new_line)
@@ -217,6 +215,8 @@ def handle_adjective(lines, i, text, tags) :
     exists = False
     new_line = ''
     input_word = text[tags.index(a)]
+    _, input_word = is_plural(input_word)
+    text[tags.index(a)] = input_word
     
     for noun_idx, noun_line in enumerate(lines[i:]):
         if not(re.match(r"pred\((.*)[1],\[(.*)\]\)\.", noun_line)):
@@ -248,9 +248,6 @@ def handle_adjective(lines, i, text, tags) :
                 break
 
     if not exists:
-        plural, lemma = is_plural(input_word)
-        if plural:
-            input_word = lemma
         if new_line == '':
             new_line = 'pred(' + input_word + ', 1,[a/' + input_word + ']).\n'
         lines.insert(noun_idx, new_line)
@@ -265,6 +262,9 @@ def handle_verb(lines, i, text, tags) :
     exists = False
     new_line = ''
     input_word = text[tags.index(v)]
+    _, input_word = is_plural(input_word)
+    text[tags.index(v)] = input_word
+    
     for noun_idx, noun_line in enumerate(lines[i:]):
         if not(re.match(r"pred\((.*)[1],\[(.*)\]\)\.", noun_line)):
             noun_idx = noun_idx + i   
@@ -296,9 +296,6 @@ def handle_verb(lines, i, text, tags) :
                 break
     
     if not exists:
-        plural, lemma = is_plural(input_word)
-        if plural:
-            input_word = lemma
         if new_line == '':
             new_line = 'pred(' + input_word + ', 1,[v/' + input_word + ']).\n'
         lines.insert(noun_idx, new_line)
@@ -355,13 +352,13 @@ def update_rules(tagger, text):
 
         pred_match = r"pred\((.*)[1],\[(.*)\]\)\."
         
-        if (POS.NOUN.value in tags) and re.match(pred_match, line): 
+        if (POS.NOUN.value in tags) and re.match(pred_match, line):            
             lines = handle_noun(lines, idx, text, tags)
         
         if (POS.ADJECTIVE.value in tags) and re.match(pred_match, line): 
             lines = handle_adjective(lines, idx, text, tags)
                 
-        if (POS.VERB.value in tags) and re.match(pred_match, line): 
+        if (POS.VERB.value in tags) and re.match(pred_match, line):
             lines = handle_verb(lines, idx, text, tags)
         
         prop_match = r"proper_noun\(s(.*) -->(.*)\]\."
