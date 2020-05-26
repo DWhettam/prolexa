@@ -316,8 +316,8 @@ def handle_proper_noun(lines, i, text, tags) :
 
 
 def update_rules(tagger, text):
-    text = text.lower()
     tags = get_tags(tagger, text)
+    text = text.lower()
     # Handle extra whitespace
     text = ' '.join(text.split()) \
                 .split(' ')
