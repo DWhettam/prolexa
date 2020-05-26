@@ -1,21 +1,29 @@
-# Adapted from Paul Brown's
-# http://www.paulbrownmagic.com/blog/quick_gui.html
-
-from argparse import ArgumentParser
+from cmd import Cmd
 from pyswip import Prolog
 import meta_grammar as meta
+import os 
+import warnings
+warnings.filterwarnings("ignore")
 
-swipl = Prolog()
-swipl.consult("../prolog/prolexa.pl")
+
+if os.getcwd().split("/")[-1] != "python" :
+    os.chdir("python/")
+
+    
+pl = Prolog()
+
+class ProlexaPlus(Cmd) :
+    intro = "Hello! I'm ProlexaPlus! Tell me anything, ask me anything."
+    prompt = "pp: "
+    file = None
+    
+    def default(self, input_): 
+        firstAnswer = meta.standardised_query(pl, input_)[0]['Output']
+        print( firstAnswer )
+        
 
 
-
-def main():
-    meta.reset_grammar()
-    parser = ArgumentParser(description="Hello! I'm ProlexaPlus! Tell me anything, ask me anything.")
-    parser.add_argument("-o", "--input", required=True)
-    args = parser.parse_args()
-    print(meta.escape_and_call_prolexa(args.input))
 
 if __name__ == "__main__":
-    main()
+    meta.reset_grammar()
+    ProlexaPlus().cmdloop()

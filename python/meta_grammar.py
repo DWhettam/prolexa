@@ -1,5 +1,5 @@
 import sys; sys.version
-import re
+import re, string
 from nltk.stem import WordNetLemmatizer
 import nltk
 nltk.download('wordnet')
@@ -29,6 +29,23 @@ class POS(Enum) :
     VERB = "VB"
     ADJECTIVE = "JJ"
     PREPOSITION = "IN"
+    COORD = "CC"
+    CARDINAL = "CD"
+    EXISTENTIAL = "EX"
+    FOREIGN = "FW"
+    LISTITEM = "LS"
+    MODAL = "MD"
+    PREDET = "PDT"
+    POSSESS = "POS"
+    PRONOUN = "PRP"
+    POSSPRONOUN = "PRP$"
+    PARTICLE = "RP"
+    SYMBOL = "SYM"
+    TO = "TO"
+    INTERJECTION = "UH"
+    WHDET = "WDT"
+    WHPRONOUN = "WP"
+    WHADVERB = "WRB"
 
 
 def reset_grammar() :
@@ -58,11 +75,14 @@ def handle_utterance_str(text) :
     return "handle_utterance(1,{},Output)".format(text)
 
 
+def remove_punctuation(s) :
+    return s.translate(str.maketrans('', '', string.punctuation))
+
+
 def standardised_query(pl, text) :
+    text = remove_punctuation(text)
     text = contractions.fix(text)
     text = lemmatise(text)
-    #_, _, tags = tagger.tag(text)
-    #tags = standardise_tags(tags)
 
     return escape_and_call_prolexa(pl, text)
 
@@ -73,18 +93,17 @@ def standardise_tags(tags) :
     for tag in tags :
         if POS.DETERMINER.value in tag :
             std.append( POS.DETERMINER.value)
-        if POS.VERB.value in tag :
+        elif POS.VERB.value in tag :
             std.append( POS.VERB.value)
-        if POS.ADVERB.value in tag :
+        elif POS.ADVERB.value in tag :
             std.append( POS.ADVERB.value)
-        if POS.ADJECTIVE.value in tag :
+        elif POS.ADJECTIVE.value in tag :
             std.append( POS.ADJECTIVE.value)
-        if POS.PREPOSITION.value in tag :
-            std.append( POS.PREPOSITION.value)
-        if POS.NOUN.value in tag and tag != POS.PROPNOUN.value :
+        elif POS.NOUN.value in tag and tag != POS.PROPNOUN.value :
             std.append( POS.NOUN.value)
-        if tag == POS.PROPNOUN.value :
-            std.append(POS.PROPNOUN.value)
+        else :
+            std.append(tag)
+    
     return std
     
 
@@ -121,43 +140,6 @@ def escape_and_call_prolexa(pl, text) :
     generator = pl.query(libPrefix + handle_utterance_str(text))
     
     return list(generator)
-    
-
-def handle_determiner(lines, i, text, tags) :
-    dt = POS.DETERMINER.value
-    start = '--> ['
-    end = ']'
-    exists = False
-    input_word = text[tags.index(dt)]
-    for det_idx, det_line in enumerate(lines[i:]):                                                
-        if not(re.match(r"determiner\([a-z],X=>B,X=>H,\[\(H:-B\)\]\)(.*)", det_line)):
-            det_idx = det_idx + i   
-            if tags:
-                tags.remove(dt)
-            if text:
-                text.remove(input_word)
-            break
-        line_word = (det_line.split(start))[1].split(end)[0]  
-        if input_word == line_word:                    
-            exists = True
-            if tags:
-                tags.remove(dt)
-            if text:
-                text.remove(input_word)
-            break 
-    
-    rule = "determiner({},X=>B,X=>H,[(H:-B)]) --> [{}].\n"
-    if not exists:
-        plural, _ = is_plural(input_word)
-        if plural:
-            name = "p"
-        else:
-            name = "s"
-        
-        new_line = rule.format(name, input_word) 
-        lines.insert(det_idx, new_line)
-
-    return lines
 
         
 def handle_noun(lines, i, text, tags) :
@@ -336,8 +318,9 @@ def handle_proper_noun(lines, i, text, tags) :
 def update_rules(tagger, text):
     text = text.lower()
     tags = get_tags(tagger, text)
-    print(tags)
-    text = text.split(' ')
+    # Handle extra whitespace
+    text = ' '.join(text.split()) \
+                .split(' ')
     start = ''
     end = ''
     lines = get_prolog_grammar(PROLEXA_PATH)
@@ -345,10 +328,6 @@ def update_rules(tagger, text):
     for idx, line in enumerate(iter(lines)):
         if not text:
             break
-        
-        det_match = re.match(r"determiner\([a-z],X=>B,X=>H,\[\(H:-B\)\]\)(.*)", line)
-        if (POS.DETERMINER.value in tags) and det_match:
-            lines = handle_determiner(lines, idx, text, tags)
 
         pred_match = r"pred\((.*)[1],\[(.*)\]\)\."
         

@@ -11,5 +11,5 @@ pip install -r requirements.txt
 
 ## Use
 
-`cd prolexa`
-`python3 python/prolexa-plus.py`
+```cd prolexa/python
+python3 prolexa-plus.py```

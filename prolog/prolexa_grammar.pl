@@ -22,11 +22,7 @@ pred(bird,    1,[n/bird]).
 pred(penguin, 1,[n/penguin]).
 pred(sparrow, 1,[n/sparrow]).
 pred(fly,     1,[v/fly]).
-pred(lion, 1,[n/lion]).
-pred(beautiful, 1,[a/beautiful]).
 pred(is, 1,[v/is]).
-pred(lion, 1,[n/lion]).
-pred(are, 1,[v/are]).
 
 pred2gr(P,1,C/W,X=>Lit):-
 	pred(P,1,L),
@@ -66,11 +62,11 @@ property(p,M) --> noun(p,M).
 
 determiner(s,X=>B,X=>H,[(H:-B)]) --> [every].
 determiner(p,X=>B,X=>H,[(H:-B)]) --> [all].
-determiner(s,X=>B,X=>H,[(H:-B)]) --> [a].
 determiner(p, sk=>H1, sk=>H2, [(H1:-true),(H2 :- true)]) -->[some].
 
 proper_noun(s,tweety) --> [tweety].
 proper_noun(s,peter) --> [peter].
+proper_noun(s,gavin) --> [gavin].
 
 
 %%% questions %%%
